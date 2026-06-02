@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "verosynthea-validator"
+version = "0.1.0"
+description = "Fairness testing for ML models using Australian demographic data"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "Verosynthea", email = "hello@verosynthea.com"},
+]
+keywords = ["fairness", "ml", "demographics", "australia", "synthetic-data", "census"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "pandas>=1.5",
+    "numpy>=1.23",
+]
+
+[project.optional-dependencies]
+hf = ["datasets>=2.0"]
+paid = ["httpx>=0.24"]
+dev = ["pytest>=7.0", "scikit-learn>=1.2"]
+
+[project.urls]
+Homepage = "https://verosynthea.com/for-ai-labs"
+Repository = "https://github.com/verosynthea/verosynthea-validator"
+Dataset = "https://huggingface.co/datasets/vero-synthea/ausynth-sample"
+Documentation = "https://verosynthea.com/about"
