@@ -245,7 +245,10 @@ def _map_income_target(income_series: pd.Series) -> pd.Series:
         "$3,000-$3,499": 3250, "$3,500 or more": 4000,
         "Not stated": 500, "Not applicable": 0,
     }
-    weekly = income_series.map(weekly_midpoints).fillna(500)
+    # HF sample may include annual range in brackets, e.g.
+    # "$1,500-$1,749 ($78,000-$90,999)" — strip the suffix
+    cleaned = income_series.str.replace(r"\s*\(.*\)$", "", regex=True)
+    weekly = cleaned.map(weekly_midpoints).fillna(500)
     annual_aud = weekly * 52
     annual_usd = annual_aud * 0.65  # rough AUD→USD
     return (annual_usd > 50000).astype(int)
