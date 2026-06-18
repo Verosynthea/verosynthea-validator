@@ -16,7 +16,6 @@ Quick start:
 from verosynthea_validator.fairness import FairnessReport, FairnessResults
 from verosynthea_validator.assertions import assert_fair
 from verosynthea_validator.data import load_ausynth_sample
-from .demos import load_us_adult_baseline, load_ausynth_test_set
 
 __version__ = "0.1.0"
 __all__ = ["FairnessReport", "FairnessResults", "assert_fair", "load_ausynth_sample"]

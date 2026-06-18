@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+tests/test_fairness.py
+verosynthea_validator/__init__.py
+verosynthea_validator/assertions.py
+verosynthea_validator/data.py
+verosynthea_validator/fairness.py
+verosynthea_validator.egg-info/PKG-INFO
+verosynthea_validator.egg-info/SOURCES.txt
+verosynthea_validator.egg-info/dependency_links.txt
+verosynthea_validator.egg-info/requires.txt
+verosynthea_validator.egg-info/top_level.txt

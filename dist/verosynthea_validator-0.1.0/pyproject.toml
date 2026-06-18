@@ -24,8 +24,6 @@ classifiers = [
 dependencies = [
     "pandas>=1.5",
     "numpy>=1.23",
-    "huggingface_hub>=0.20.0",
-    "datasets>=2.14.0",
 ]
 
 [project.optional-dependencies]

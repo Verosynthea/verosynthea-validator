@@ -1,8 +1,6 @@
 # verosynthea-validator
 
-## Quick Start: Test a US-trained Model on Australian Data
-
-This is a real-world fairness scenario. We take a standard classifier trained on US Census data and test how it performs on Australian demographics.
+Fairness testing for ML models using real Australian demographic data. One line to check whether your model treats demographic groups equally.
 
 ```bash
 pip install verosynthea-validator
@@ -10,41 +8,36 @@ pip install verosynthea-validator
 
 ```python
 from verosynthea_validator import FairnessReport
-from verosynthea_validator.demos import (
-    load_us_adult_baseline,
-    load_ausynth_test_set,
-)
 
-# Load a US-trained income classifier and Australian test data
-model = load_us_adult_baseline()
-au_data = load_ausynth_test_set()
-
-# Run fairness audit
 report = FairnessReport(
-    model=model,
-    target_column="income_above_threshold",
-    protected_attributes=["SEXP", "BPLP", "AGE5P"],
+    data=test_data,
+    y_true="label",
+    y_pred="prediction",
+    protected_columns=["SEXP", "BPLP", "profile_name"],
 )
-report.run(test_data=au_data)
-report.show()
+results = report.run()
+print(results.summary())
 ```
 
-### What you'll see
+Output:
 
-- **Country-of-birth bias gap (~30%):** The US-trained model handles US-typical birth countries well, others poorly
-- **Income threshold miscalibration:** $50K USD doesn't map cleanly to Australian income distributions
-- **Occupation bias (~18%):** Australian occupation categories don't align with UCI Adult codes
+```
+Fairness Report (n=5,000, overall accuracy=0.847)
+============================================================
 
-This is the standard fairness-testing scenario for Australian deployments: models trained on US data need to be validated against Australian populations before production use.
+[PASS] SEXP (2 groups, smallest n=2,451)
+  Accuracy gap:           0.012
+  Demographic parity gap: 0.008
+  Equalised odds gap:     0.015
 
-### What just happened?
+[FAIL] BPLP (3 groups, smallest n=312)
+  Accuracy gap:           0.073
+  Demographic parity gap: 0.091
+  Equalised odds gap:     0.064
 
-The [UCI Adult Income dataset](https://archive.ics.uci.edu/dataset/2/adult) is the canonical fairness benchmark in ML, but it's US Census data from 1994. When you run a model trained on it against Australian population data, the validator surfaces the bias gaps that come from the distribution mismatch.
-
-For your own models, replace `load_us_adult_baseline()` with your model and `load_ausynth_test_set()` with your test data or an [AUSynth subset](https://huggingface.co/datasets/vero-synthea/ausynth-sample).
-
----
-
+============================================================
+Overall: FAIL (worst gap: 0.073 on BPLP)
+```
 
 ## CI/CD gate
 

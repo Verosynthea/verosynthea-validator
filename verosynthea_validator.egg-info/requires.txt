@@ -1,0 +1,12 @@
+pandas>=1.5
+numpy>=1.23
+
+[dev]
+pytest>=7.0
+scikit-learn>=1.2
+
+[hf]
+datasets>=2.0
+
+[paid]
+httpx>=0.24
