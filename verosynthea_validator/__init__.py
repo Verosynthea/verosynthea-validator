@@ -18,5 +18,37 @@ from verosynthea_validator.assertions import assert_fair
 from verosynthea_validator.data import load_ausynth_sample
 from .demos import load_us_adult_baseline, load_ausynth_test_set
 
-__version__ = "0.1.0"
-__all__ = ["FairnessReport", "FairnessResults", "assert_fair", "load_ausynth_sample"]
+# Pro tier (paid API). pro.py imports only the stdlib at module level —
+# ``requests`` is imported lazily inside the methods that need it — so
+# importing the package never forces the optional [pro] dependency on
+# free-tier users.
+from .pro import (
+    ProValidation,
+    submit_pro_validation,
+    check_api_key,
+    show,
+    render_report,
+    VerosyntheaAPIError,
+    InvalidAPIKeyError,
+    InsufficientCreditsError,
+    ValidationJobError,
+)
+
+__version__ = "0.2.0"
+__all__ = [
+    # free tier
+    "FairnessReport",
+    "FairnessResults",
+    "assert_fair",
+    "load_ausynth_sample",
+    # pro tier
+    "ProValidation",
+    "submit_pro_validation",
+    "check_api_key",
+    "show",
+    "render_report",
+    "VerosyntheaAPIError",
+    "InvalidAPIKeyError",
+    "InsufficientCreditsError",
+    "ValidationJobError",
+]

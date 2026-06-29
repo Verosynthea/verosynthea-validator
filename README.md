@@ -102,10 +102,45 @@ from verosynthea_validator import load_ausynth_sample
 
 # Free tier (downloads from HF on first call)
 df = load_ausynth_sample()
-
-# Paid tier
-df = load_ausynth_sample(api_key="vero_...", geography="bondi-2026-nsw")
 ```
+
+## Pro tier: validate against the full national dataset
+
+The free tier scores your predictions against a 5,000-row sample. The **pro
+tier** uploads your fitted model and scores it against the full national
+synthetic dataset (~32M individuals) server-side, returning a weighted fairness
+report. Get an API key at [verosynthea.com/account/api](https://verosynthea.com/account/api).
+
+```python
+import os
+from verosynthea_validator import ProValidation, show, check_api_key
+
+# Optional: confirm the key + see your credit balance (no charge)
+check_api_key(os.environ["VEROSYNTHEA_API_KEY"])
+
+pro = ProValidation(
+    model=your_model,                       # any fitted estimator with .predict()
+    target_column="income_above_threshold",
+    protected_attributes=["sex", "country_of_birth", "age_group"],
+    api_key=os.environ["VEROSYNTHEA_API_KEY"],
+)
+
+job_id = pro.submit()                       # costs 50 credits; refunded if it fails
+report = pro.wait_for_completion(job_id)    # polls until done
+pro.show(report)                            # pretty-prints the fairness report
+```
+
+One-liner:
+
+```python
+from verosynthea_validator import submit_pro_validation, show
+report = submit_pro_validation(model, "income_above_threshold",
+                               ["sex", "country_of_birth"], wait=True)
+show(report)
+```
+
+Set `VEROSYNTHEA_API_KEY` to avoid passing `api_key=` everywhere. To target a
+non-production deployment, set `VEROSYNTHEA_API_BASE_URL`.
 
 ## The 8 demographic profiles
 
@@ -125,7 +160,7 @@ df = load_ausynth_sample(api_key="vero_...", geography="bondi-2026-nsw")
 ```bash
 pip install verosynthea-validator          # core (pandas + numpy)
 pip install verosynthea-validator[hf]     # + Hugging Face datasets loader
-pip install verosynthea-validator[paid]   # + httpx for API access
+pip install verosynthea-validator[pro]    # + requests for the pro-tier API client
 pip install verosynthea-validator[dev]    # + pytest + sklearn for development
 ```
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verosynthea-validator"
-version = "0.1.0"
+version = "0.2.0"
 description = "Fairness testing for ML models using Australian demographic data"
 readme = "README.md"
 license = {text = "MIT"}
@@ -30,8 +30,11 @@ dependencies = [
 
 [project.optional-dependencies]
 hf = ["datasets>=2.0"]
-paid = ["httpx>=0.24"]
-dev = ["pytest>=7.0", "scikit-learn>=1.2"]
+# Pro tier calls the Verosynthea API. The client uses ``requests``
+# (lazy-imported so free-tier users never need it). Installed via
+# ``pip install verosynthea-validator[pro]``.
+pro = ["requests>=2.28"]
+dev = ["pytest>=7.0", "scikit-learn>=1.2", "requests>=2.28"]
 
 [project.urls]
 Homepage = "https://verosynthea.com/for-ai-labs"
