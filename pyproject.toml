@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verosynthea-validator"
-version = "0.2.0"
+version = "0.2.1"
 description = "Fairness testing for ML models using Australian demographic data"
 readme = "README.md"
 license = {text = "MIT"}
