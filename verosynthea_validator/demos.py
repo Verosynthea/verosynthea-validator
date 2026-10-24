@@ -29,6 +29,16 @@ _EDUCATION_MAP = {
     "Inadequately described": "Some-college",
     "Not stated": "Some-college",
     "Not applicable": "Some-college",
+    # AUSynth v2.2 labels (HEAP, highest year of school or non-school level)
+    "Postgraduate Degree Level": "Doctorate",
+    "Graduate Diploma and Graduate Certificate Level": "Masters",
+    "Bachelor Degree Level": "Bachelors",
+    "Advanced Diploma and Diploma Level": "Assoc-voc",
+    "Certificate III & IV Level": "Some-college",
+    "Certificate I & II Level": "HS-grad",
+    "Secondary Education - Years 10 and above": "HS-grad",
+    "Secondary Education - Years 9 and below": "9th",
+    "Supplementary Codes": "Some-college",
 }
 
 # Education → education-num (ordinal)
@@ -79,6 +89,10 @@ _COUNTRY_MAP = {
     "Sub-Saharan Africa": "South",
     "Inadequately described": "United-States",
     "Not stated": "United-States",
+    # AUSynth v2.2 labels (BPLP at the broadest level: Australia is inside
+    # "Oceania and Antarctica")
+    "Oceania and Antarctica": "United-States",
+    "Supplementary codes": "United-States",
 }
 
 # AUSynth hours worked → midpoint numeric
@@ -88,6 +102,9 @@ _HOURS_MAP = {
     "41-44 hours": 42, "45-49 hours": 47, "50-59 hours": 55,
     "60 hours or more": 65, "Not stated": 40,
     "Not applicable": 0,
+    # AUSynth v2.2 labels (HRWRP)
+    "0 hours": 0, "1-9 hours": 5, "10-19 hours": 15, "20-29 hours": 25,
+    "30-34 hours": 32, "40-44 hours": 42, "60-69 hours": 65, "70 hours or more": 75,
 }
 
 # AUSynth age bracket → midpoint
@@ -103,6 +120,49 @@ _AGE_MAP = {
 
 # AUSynth sex mapping
 _SEX_MAP = {"Male": "Male", "Female": "Female"}
+
+#: Every AUSynth v2.2 label of the columns this mapping reads, as they appear
+#: in the free sample. tests/test_v22_labels.py checks that each one has an
+#: explicit entry, so a label nobody mapped fails a test instead of quietly
+#: taking the default (every degree "Some-college", every worker 40 hours).
+V22_LABELS = {
+    "HEAP": ["Secondary Education - Years 10 and above", "Not applicable", "Bachelor Degree Level",
+             "Certificate III & IV Level", "Advanced Diploma and Diploma Level",
+             "Secondary Education - Years 9 and below", "Not stated", "Postgraduate Degree Level",
+             "Supplementary Codes", "Graduate Diploma and Graduate Certificate Level",
+             "Certificate I & II Level"],
+    "HRWRP": ["Not applicable", "35-39 hours", "40-44 hours", "20-29 hours", "10-19 hours", "30-34 hours",
+              "50-59 hours", "0 hours", "45-49 hours", "1-9 hours", "60-69 hours", "70 hours or more",
+              "Not stated"],
+    "MSTP": ["Married", "Never married", "Not applicable", "Divorced", "Widowed", "Separated"],
+    "OCCP": ["Not applicable", "Professionals", "Managers", "Technicians and Trades Workers",
+             "Clerical and Administrative Workers", "Community and Personal Service Workers", "Labourers",
+             "Sales Workers", "Machinery Operators and Drivers", "Inadequately described", "Not stated"],
+    "BPLP": ["Oceania and Antarctica", "North-West Europe", "Southern and Central Asia", "Not stated",
+             "South-East Asia", "North-East Asia", "Southern and Eastern Europe",
+             "North Africa and the Middle East", "Sub-Saharan Africa", "Americas", "Supplementary codes"],
+    "SEXP": ["Female", "Male"],
+    "AGE5P": ["0-4 years", "5-9 years", "10-14 years", "15-19 years", "20-24 years", "25-29 years",
+              "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years",
+              "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years",
+              "90-94 years", "95-99 years", "100 years and over"],
+    "INCP": ["Negative income", "Nil income", "$1-$149 ($1-$7,799)", "$150-$299 ($7,800-$15,599)",
+             "$300-$399 ($15,600-$20,799)", "$400-$499 ($20,800-$25,999)", "$500-$649 ($26,000-$33,799)",
+             "$650-$799 ($33,800-$41,599)", "$800-$999 ($41,600-$51,999)",
+             "$1,000-$1,249 ($52,000-$64,999)", "$1,250-$1,499 ($65,000-$77,999)",
+             "$1,500-$1,749 ($78,000-$90,999)", "$1,750-$1,999 ($91,000-$103,999)",
+             "$2,000-$2,999 ($104,000-$155,999)", "$3,000-$3,499 ($156,000-$181,999)",
+             "$3,500 or more ($182,000 or more)", "Not stated", "Not applicable"],
+}
+
+
+#: The UCI Adult feature columns, in the order the baseline model expects.
+#: ``model.predict(test_set[UCI_FEATURES])``.
+UCI_FEATURES = (
+    "age", "workclass", "fnlwgt", "education", "education-num",
+    "marital-status", "occupation", "relationship", "race", "sex",
+    "capital-gain", "capital-loss", "hours-per-week", "native-country",
+)
 
 
 def map_ausynth_to_uci_adult(au_df: pd.DataFrame) -> pd.DataFrame:
@@ -213,11 +273,7 @@ def map_ausynth_to_uci_adult(au_df: pd.DataFrame) -> pd.DataFrame:
             uci[col] = au_df[col].values
 
     # Reorder to match UCI Adult feature order
-    feature_cols = [
-        "age", "workclass", "fnlwgt", "education", "education-num",
-        "marital-status", "occupation", "relationship", "race", "sex",
-        "capital-gain", "capital-loss", "hours-per-week", "native-country",
-    ]
+    feature_cols = list(UCI_FEATURES)
     extra_cols = [c for c in uci.columns if c not in feature_cols]
     uci = uci[feature_cols + extra_cols]
 
@@ -276,8 +332,8 @@ def load_us_adult_baseline():
 
 def load_ausynth_test_set(n: int = 5000) -> pd.DataFrame:
     """
-    Load the AUSynth HuggingFace sample and map to UCI Adult schema
-    for fairness testing.
+    Load the AUSynth free sample (5,000 people, national, v2.2) and map
+    it to the UCI Adult schema for fairness testing.
 
     Parameters
     ----------
@@ -290,10 +346,10 @@ def load_ausynth_test_set(n: int = 5000) -> pd.DataFrame:
         DataFrame in UCI Adult schema with additional AUSynth
         demographic columns for fairness grouping.
     """
-    from datasets import load_dataset
+    from .data import load_ausynth_sample
 
-    ds = load_dataset("vero-synthea/ausynth-sample")
-    df = ds["train"].to_pandas()
+    df = load_ausynth_sample()
     if n < len(df):
-        df = df.sample(n=n, random_state=42)
+        # reset_index: FairnessReport reads predictions by position.
+        df = df.sample(n=n, random_state=42).reset_index(drop=True)
     return map_ausynth_to_uci_adult(df)

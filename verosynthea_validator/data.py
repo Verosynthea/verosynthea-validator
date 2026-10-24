@@ -1,7 +1,8 @@
 """
 Data loading utilities for verosynthea-validator.
 
-Free tier: loads the 5,000-row AUSynth sample from Hugging Face.
+Free tier: loads the 5,000-person AUSynth national sample (v2.2) from
+Hugging Face.
 Paid tier: connects to verosynthea.com API for full national data.
 """
 from __future__ import annotations
@@ -14,8 +15,15 @@ import pandas as pd
 
 
 _HF_DATASET = "vero-synthea/ausynth-sample"
-_HF_FILE = "ausynth_sample_paddington_4064.parquet"
+#: The national sample: 5,000 people drawn from every state and territory of
+#: AUSynth v2.2. Earlier versions of this package read a one-suburb sample
+#: (Paddington 4064); that file is not used any more.
+_HF_FILE = "ausynth_sample.parquet"
+#: The sample's AUSynth version. Part of the cache file name, so a cached copy
+#: of an older sample is never read in place of this one.
+SAMPLE_VERSION = "v2.2"
 _CACHE_DIR = Path.home() / ".cache" / "verosynthea"
+_CACHE_FILE = f"ausynth_sample_{SAMPLE_VERSION}.parquet"
 
 
 def load_ausynth_sample(
@@ -28,7 +36,7 @@ def load_ausynth_sample(
     ----------
     api_key : str, optional
         Verosynthea API key for the full national dataset. If None, loads
-        the free 5,000-row Paddington sample from Hugging Face.
+        the free 5,000-person national sample from Hugging Face.
     geography : str, optional
         Suburb slug (e.g. "paddington-4064-qld") for paid-tier queries.
         Ignored when using the free sample.
@@ -36,8 +44,9 @@ def load_ausynth_sample(
     Returns
     -------
     pd.DataFrame
-        Person-level demographic data with 25+ variables including
-        profile_id and profile_name.
+        One row per synthetic person: ``suburb_id``, ``state`` and 23 ABS
+        Census 2021 variables (AGE5P, SEXP, BPLP, INCP and the rest), as
+        labels.
     """
     if api_key:
         return _load_paid(api_key, geography)
@@ -46,14 +55,14 @@ def load_ausynth_sample(
 
 def _load_free_sample() -> pd.DataFrame:
     """Load the free HF sample. Downloads on first call, caches locally."""
-    cache_path = _CACHE_DIR / _HF_FILE
+    cache_path = _CACHE_DIR / _CACHE_FILE
     if cache_path.exists():
         return pd.read_parquet(cache_path)
 
     # Try loading from HF datasets library
     try:
         from datasets import load_dataset
-        ds = load_dataset(_HF_DATASET, split="train")
+        ds = load_dataset(_HF_DATASET, data_files=_HF_FILE, split="train")
         df = ds.to_pandas()
         _CACHE_DIR.mkdir(parents=True, exist_ok=True)
         df.to_parquet(cache_path, index=False)

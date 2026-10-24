@@ -46,7 +46,8 @@ def assert_fair(
     y_pred : str
         Predicted binary label column.
     protected_columns : list[str], optional
-        Columns to check. Default: ["SEXP", "BPLP", "profile_name"].
+        Columns to check. Default: whichever of ["SEXP", "BPLP",
+        "profile_name"] the data has.
     max_accuracy_gap : float
         Maximum allowed accuracy difference between any two groups (default 0.05).
     max_demographic_parity_gap : float

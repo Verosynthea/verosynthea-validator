@@ -154,7 +154,8 @@ class FairnessReport:
     y_pred : str
         Column name for predicted binary labels (0/1).
     protected_columns : list[str], optional
-        Demographic columns to test. Defaults to ["SEXP", "BPLP", "profile_name"].
+        Demographic columns to test. Defaults to whichever of
+        ["SEXP", "BPLP", "profile_name"] the data has.
     min_group_size : int
         Minimum observations per group to include (default 30).
     """
@@ -170,9 +171,16 @@ class FairnessReport:
         self.data = data
         self.y_true = y_true
         self.y_pred = y_pred
+        # The defaults are the ones the data has: the v2.2 free sample
+        # carries SEXP and BPLP and no demographic profile column.
         self.protected_columns = list(
-            protected_columns or ["SEXP", "BPLP", "profile_name"]
+            protected_columns
+            or [c for c in ("SEXP", "BPLP", "profile_name") if c in data.columns]
         )
+        if not self.protected_columns:
+            raise ValueError(
+                "No protected columns: pass protected_columns, or include "
+                "SEXP, BPLP or profile_name in the data")
         self.min_group_size = min_group_size
 
         # Validate inputs
