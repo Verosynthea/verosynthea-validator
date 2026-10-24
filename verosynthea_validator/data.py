@@ -14,10 +14,9 @@ from typing import Optional
 import pandas as pd
 
 
-_HF_DATASET = "vero-synthea/ausynth-sample"
+_HF_DATASET = "vero-synthea/ausynth-v22-sample"
 #: The national sample: 5,000 people drawn from every state and territory of
-#: AUSynth v2.2. Earlier versions of this package read a one-suburb sample
-#: (Paddington 4064); that file is not used any more.
+#: AUSynth v2.2, in its own public dataset repository.
 _HF_FILE = "ausynth_sample.parquet"
 #: The sample's AUSynth version. Part of the cache file name, so a cached copy
 #: of an older sample is never read in place of this one.
@@ -70,7 +69,7 @@ def _load_free_sample() -> pd.DataFrame:
     except ImportError:
         pass
 
-    # Fallback: direct parquet download
+    # Without the datasets library: the same file, straight from the repository.
     try:
         url = f"https://huggingface.co/datasets/{_HF_DATASET}/resolve/main/{_HF_FILE}"
         df = pd.read_parquet(url)

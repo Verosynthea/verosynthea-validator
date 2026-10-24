@@ -48,7 +48,7 @@ with your own data, or with the free sample below.
 ## The free sample
 
 `load_ausynth_sample()` downloads the free sample from
-[Hugging Face](https://huggingface.co/datasets/vero-synthea/ausynth-sample)
+[Hugging Face](https://huggingface.co/datasets/vero-synthea/ausynth-v22-sample)
 on first use and caches it in `~/.cache/verosynthea/`.
 
 ```python
@@ -123,7 +123,7 @@ Australian populations:
 
 | Tier | Data |
 |------|------|
-| **Free** | The 5,000-person national sample on [Hugging Face](https://huggingface.co/datasets/vero-synthea/ausynth-sample) |
+| **Free** | The 5,000-person national sample on [Hugging Face](https://huggingface.co/datasets/vero-synthea/ausynth-v22-sample) |
 | **Pro** | The full national population (v2.2) through the API: 27,664,147 synthetic person records across 15,342 suburbs. See [verosynthea.com](https://verosynthea.com) |
 
 ## Pro tier: validate against the full national population
@@ -179,7 +179,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Links
 
-- **Dataset:** [vero-synthea/ausynth-sample](https://huggingface.co/datasets/vero-synthea/ausynth-sample) on Hugging Face
+- **Dataset:** [vero-synthea/ausynth-v22-sample](https://huggingface.co/datasets/vero-synthea/ausynth-v22-sample) on Hugging Face
 - **Full product:** [verosynthea.com](https://verosynthea.com)
 - **Methodology:** [verosynthea.com/about](https://verosynthea.com/about)
 

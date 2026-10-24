@@ -60,6 +60,21 @@ def test_the_loader_reads_the_v22_cache(tmp_path, monkeypatch):
     assert data_module.SAMPLE_VERSION in data_module._CACHE_FILE
 
 
+def test_the_sample_comes_from_the_v22_repository(tmp_path, monkeypatch):
+    import sys
+
+    assert data_module._HF_DATASET == "vero-synthea/ausynth-v22-sample"
+    monkeypatch.setattr(data_module, "_CACHE_DIR", tmp_path)
+    # Without the datasets library the loader reads the same file by URL.
+    monkeypatch.setitem(sys.modules, "datasets", None)
+    seen = []
+    monkeypatch.setattr(data_module.pd, "read_parquet",
+                        lambda url, *a, **k: seen.append(url) or _v22_frame(3))
+    data_module.load_ausynth_sample()
+    assert seen == ["https://huggingface.co/datasets/vero-synthea/ausynth-v22-sample"
+                    "/resolve/main/ausynth_sample.parquet"]
+
+
 def test_an_old_paddington_cache_is_not_read(tmp_path, monkeypatch):
     monkeypatch.setattr(data_module, "_CACHE_DIR", tmp_path)
     pd.DataFrame({"old": [1]}).to_parquet(tmp_path / "ausynth_sample_paddington_4064.parquet")

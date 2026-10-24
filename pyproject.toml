@@ -39,5 +39,5 @@ dev = ["pytest>=7.0", "scikit-learn>=1.2", "requests>=2.28"]
 [project.urls]
 Homepage = "https://verosynthea.com/for-ai-labs"
 Repository = "https://github.com/verosynthea/verosynthea-validator"
-Dataset = "https://huggingface.co/datasets/vero-synthea/ausynth-sample"
+Dataset = "https://huggingface.co/datasets/vero-synthea/ausynth-v22-sample"
 Documentation = "https://verosynthea.com/about"

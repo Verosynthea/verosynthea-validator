@@ -2,10 +2,13 @@
 
 ## 0.3.0
 
-- **The free sample is now national.** `load_ausynth_sample()` and
-  `demos.load_ausynth_test_set()` read the 5,000-person AUSynth v2.2 sample
-  (`ausynth_sample.parquet`). It covers all eight states and territories and
-  2,545 suburbs. The earlier sample covered one suburb (Paddington 4064).
+- **The free sample is now national, in a new dataset repository.**
+  `load_ausynth_sample()` and `demos.load_ausynth_test_set()` read the
+  5,000-person AUSynth v2.2 sample (`ausynth_sample.parquet`) from
+  [`vero-synthea/ausynth-v22-sample`](https://huggingface.co/datasets/vero-synthea/ausynth-v22-sample)
+  on Hugging Face. It covers all eight states and territories and 2,545
+  suburbs. The earlier one-suburb sample is no longer available, and this
+  version does not read it.
 - **New cache file name.** The sample is cached as
   `~/.cache/verosynthea/ausynth_sample_v2.2.parquet`, so an older cached
   sample is never read in its place.
